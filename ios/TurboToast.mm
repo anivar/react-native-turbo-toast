@@ -91,6 +91,7 @@ RCT_EXPORT_METHOD(show:(NSDictionary *)options
                                                      backgroundColor:backgroundColor
                                                            textColor:textColor
                                                               action:action
+                                                             actions:actions
                                                              iconUri:iconUri
                                                              toastId:toastId
                                                        dismissOnPress:dismissOnPress
@@ -149,6 +150,7 @@ RCT_EXPORT_METHOD(hideAll) {
                         backgroundColor:(NSString *)backgroundColor
                               textColor:(NSString *)textColor
                                  action:(NSDictionary *)action
+                                actions:(NSArray *)actions
                                 iconUri:(NSString *)iconUri
                                toastId:(NSString *)toastId
                           dismissOnPress:(BOOL)dismissOnPress
