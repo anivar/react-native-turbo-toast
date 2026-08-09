@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2]
+
+### Fixed
+- The native iOS/Android build had never once compiled: codegen rejected `onPress`
+  nested inside `NativeToastAction` (function in an object type), the Android
+  module had a duplicate class and a missing import, `android/build.gradle`
+  applied a Gradle plugin removed since React Native 0.71, and the new-architecture
+  Kotlin spec directory did not exist.
+- A second codegen defect surfaced once the first was fixed: `duration` was typed
+  as a heterogeneous union (`'short' | 'long' | number`), which codegen also
+  rejects. `manager.ts` now resolves it to milliseconds before crossing the bridge.
+- `CustomToastView`'s action-button handler cast the activity to `ReactActivity`
+  and reached into `reactInstanceManager`, which is `protected` — it now takes
+  the `ReactContext` directly instead.
+- Added `.github/workflows/native.yml`, which compiles a real host app on every
+  push so this class of defect fails CI instead of shipping silently.
+
+### Documentation
+- Corrected `API.md`, `FEATURES.md`, and `FEATURE_COMPARISON.md`: removed the
+  unexported `useToast()`/`useGroupToasts()`/`useQueueEvents()` hooks, fixed the
+  `QueueStats`/`QueueEvent`/`ToastAction` shapes to match `src/types.ts`, and
+  corrected Android's swipe-to-dismiss and custom-view/action-button support
+  (all real, previously documented as absent or iOS/web-only).
+- `CONTRIBUTING.md`: fixed the Node version requirement (`>=24.0.0`) and the
+  native method examples (`show`, not `showToast`).
+- `SECURITY.md`: replaced the stale `security@openslm.ai` contact and version
+  table.
+
 ## [1.1.1]
 
 ### Changed

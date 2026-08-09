@@ -2,10 +2,10 @@
 
 ## 🎯 Feature Status Overview
 
-**Current Version**: v0.3.0
-**Feature Completion**: 100% ✅ (All features implemented)
-**Production Ready**: ✅ Yes
-**Test Coverage**: 105 tests passing
+**Feature Completion**: 100% ✅ (All planned features implemented)
+**Test Coverage**: 105 unit tests passing; native iOS/Android build verified
+in CI on every push (`native.yml`) against a real host app — check that
+workflow's status before relying on it in production.
 
 ## ✅ Implemented Features
 
@@ -91,8 +91,6 @@
 #### **React Hooks**
 - ✅ **useToastQueue()** - Complete queue management hook
 - ✅ **useToastStats()** - Statistics monitoring hook
-- ✅ **useGroupToasts()** - Group-specific monitoring
-- ✅ **useQueueEvents()** - Event-only monitoring hook
 
 #### **Visual Debugging**
 - ✅ **QueueMonitor Component** - Real-time queue inspection
@@ -130,7 +128,7 @@
 
 #### **User Experience**
 - ✅ **Haptic Feedback** - Platform-specific haptics
-- ✅ **Gesture Support** - Swipe to dismiss (iOS/Web)
+- ✅ **Gesture Support** - Swipe to dismiss (all platforms)
 - ✅ **Action Buttons** - Interactive buttons with callbacks
 - ✅ **Animation Control** - Configurable animation duration
 
@@ -182,17 +180,15 @@
 - `Toast.showProgress(message, progress?, options?)`
 - `Toast.updateProgress(id, progress, message?)`
 
-### React Hooks (4)
+### React Hooks (2)
 - `useToastQueue(options?)` - Complete queue management
 - `useToastStats(refreshInterval?)` - Statistics only
-- `useGroupToasts(group, refreshInterval?)` - Group monitoring
-- `useQueueEvents(maxEvents?)` - Event monitoring
 
 ### Components (2)
 - `<ToastContainer>` - Custom view portal
 - `<QueueMonitor>` - Visual queue inspector
 
-**Total API Surface**: 30 methods + 6 components/hooks = **36 public APIs**
+**Total API Surface**: 30 methods + 4 components/hooks = **34 public APIs**
 
 ## 🏗 Platform Implementation Status
 
@@ -201,22 +197,13 @@
 | **Basic Toasts** | ✅ Native | ✅ Custom | ✅ DOM | Full parity |
 | **Custom Styling** | ✅ UIView | ✅ View | ✅ CSS | Colors, positioning |
 | **Action Buttons** | ✅ UIButton | ✅ Button | ✅ Button | All platforms supported |
-| **Swipe Dismiss** | ✅ Gesture | ❌ Tap only | ✅ Touch | Android limited to tap |
+| **Swipe Dismiss** | ✅ Gesture | ✅ Gesture | ✅ Touch | Full parity |
 | **Progress Bars** | ✅ UIView | ✅ ProgressBar | ✅ CSS | Native implementations |
 | **Haptic Feedback** | ✅ UIKit | ✅ Vibration | ✅ Navigator | Platform APIs |
 | **Custom Components** | ✅ Portal | ✅ Portal | ✅ Portal | React-based |
 | **Queue Management** | ✅ Full | ✅ Full | ✅ Full | Complete parity |
 | **Accessibility** | ✅ VoiceOver | ✅ TalkBack | ✅ ARIA | Screen readers |
 | **Animations** | ✅ Spring | ✅ ValueAnimator | ✅ CSS | 60fps native |
-
-## 📈 Performance Metrics
-
-- **Bundle Impact**: < 20KB minified + gzipped
-- **Memory Usage**: < 1MB per active toast
-- **Animation Performance**: 60fps with native drivers
-- **Queue Processing**: < 1ms per operation
-- **Initialization Time**: < 5ms cold start
-- **Show Toast Time**: < 10ms from call to display
 
 ## 🧪 Test Coverage
 
@@ -228,21 +215,10 @@
 - **Memory Leaks**: Prevented
 - **Platform Compatibility**: Verified
 
-## 🔄 Migration & Compatibility
+See [CHANGELOG.md](./CHANGELOG.md) for version history. There is no separate
+migration guide.
 
-### Breaking Changes from v0.1.x
-- ✅ **Queue Configuration** - Moved to `Toast.configure()`
-- ✅ **Custom Views** - Require `ToastContainer` wrapper
-- ✅ **Callback Signatures** - Standardized for consistency
-- ✅ **Type Definitions** - Enhanced with new features
-
-### Migration Support
-- ✅ **Backward Compatibility** - 95% compatible with v0.1.x
-- ✅ **Migration Guide** - Step-by-step upgrade instructions
-- ✅ **Deprecation Warnings** - Helpful transition messages
-- ✅ **Example Updates** - Updated example implementations
-
-## ✅ Recently Completed Features (v0.3.0)
+## ✅ Feature Highlights
 
 ### **Multi-Action Support**
 - ✅ `actions?: ToastAction[]` - Multiple action buttons per toast
@@ -314,24 +290,12 @@
 **react-native-turbo-toast** is the most feature-complete toast library for React Native, offering:
 
 ### ✅ **What's Complete**
-- **100% of planned features** implemented and tested
-- **Enterprise-grade** queue management system
-- **Production-ready** with comprehensive error handling
-- **Developer-friendly** with extensive tooling and TypeScript support
-- **Cross-platform** with platform-specific optimizations
-- **Advanced features** including multi-actions, animations, stacking, persistence, and analytics
-
-### 🎉 **All Features Implemented**
-Version 0.3.0 marks the completion of all originally planned features:
-- ✅ Multi-action buttons with style variants
-- ✅ Animation presets for rich visual effects
-- ✅ Visual stacking for multiple toasts
-- ✅ Persistence for queue recovery
-- ✅ Analytics for usage tracking
-
-### 🚀 **Production Ready**
-The library is **fully production-ready** with a complete feature set. All features are implemented, tested, and optimized for real-world applications.
+- **100% of planned features** implemented and unit-tested
+- Priority-based queue management with grouping, dedup, and retry
+- Full TypeScript definitions with IDE autocomplete
+- Cross-platform: iOS, Android, and web
+- Multi-action buttons, animation presets, visual stacking, persistence, and analytics
 
 ---
 
-*Last updated: React Native 0.80+ • TypeScript 5.0+ • 105 tests passing*
+*React Native 0.81+ • TypeScript 5.0+ • 105 tests passing*

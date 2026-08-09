@@ -29,8 +29,8 @@
 
 | Feature | Our Implementation | Status |
 |---------|-------------------|---------|
-| Action Buttons | ✅ iOS/Web (Android uses native Toast) | Complete |
-| Swipe to Dismiss | ✅ iOS/Web | Complete |
+| Action Buttons | ✅ All platforms (custom view) | Complete |
+| Swipe to Dismiss | ✅ All platforms | Complete |
 | Tap to Dismiss | ✅ dismissOnPress option | Complete |
 | Update Live Toast | ✅ update() method | Complete |
 | Check Active State | ✅ isActive() method | Complete |
@@ -60,13 +60,13 @@
 | **Performance** | Standard | Optimized with JSI | ✅ Ours |
 | **Custom Toast Types** | ✅ Yes | ✅ Yes | Tie |
 | **Toast Queue** | ✅ Yes | ✅ Priority queue | ✅ Ours |
-| **Swipe Gestures** | ✅ Yes | ✅ iOS/Web | Tie |
-| **Action Buttons** | ❌ No | ✅ iOS/Web | ✅ Ours |
+| **Swipe Gestures** | ✅ Yes | ✅ All platforms | Tie |
+| **Action Buttons** | ❌ No | ✅ All platforms | ✅ Ours |
 | **Update Live Toast** | ❌ No | ✅ Yes | ✅ Ours |
 | **Web Support** | ❌ No | ✅ Yes | ✅ Ours |
 | **TypeScript** | ✅ Yes | ✅ Yes | Tie |
-| **Custom Components** | ✅ Yes | ❌ No | ❌ Theirs |
-| **JSX in Toast** | ✅ Yes | ❌ No | ❌ Theirs |
+| **Custom Components** | ✅ Yes | ✅ Yes (`customView`) | Tie |
+| **JSX in Toast** | ✅ Yes | ✅ Yes (`customView`) | Tie |
 | **Accessibility** | ✅ Yes | ✅ Yes | Tie |
 
 ### vs react-native-root-toast
@@ -76,9 +76,9 @@
 | **Architecture** | Bridge-based | TurboModules | ✅ Ours |
 | **Native Implementation** | ❌ JS-based | ✅ True native | ✅ Ours |
 | **Performance** | Lower | Higher | ✅ Ours |
-| **Action Buttons** | ❌ No | ✅ iOS/Web | ✅ Ours |
+| **Action Buttons** | ❌ No | ✅ All platforms | ✅ Ours |
 | **Queue Management** | ❌ Basic | ✅ Priority queue | ✅ Ours |
-| **Swipe to Dismiss** | ❌ No | ✅ iOS/Web | ✅ Ours |
+| **Swipe to Dismiss** | ❌ No | ✅ All platforms | ✅ Ours |
 | **Web Support** | ❌ No | ✅ Yes | ✅ Ours |
 | **Custom Animations** | ✅ Yes | ✅ Limited | ❌ Theirs |
 | **Shadow/Opacity** | ✅ Customizable | ✅ Platform default | Tie |
@@ -91,7 +91,7 @@
 | **Features** | ❌ Basic only | ✅ Full-featured | ✅ Ours |
 | **Customization** | ❌ Limited | ✅ Extensive | ✅ Ours |
 | **Queue Management** | ❌ No | ✅ Yes | ✅ Ours |
-| **Action Buttons** | ❌ No | ✅ iOS/Web | ✅ Ours |
+| **Action Buttons** | ❌ No | ✅ All platforms | ✅ Ours |
 | **TypeScript** | ❌ No | ✅ Yes | ✅ Ours |
 | **Web Support** | ❌ No | ✅ Yes | ✅ Ours |
 
@@ -101,10 +101,10 @@
 |---------|------------------------|-------------------------|---------|
 | **Architecture** | Bridge-based | TurboModules | ✅ Ours |
 | **Performance** | Good | Better (TurboModules) | ✅ Ours |
-| **Custom Components** | ✅ Yes | ❌ No | ❌ Theirs |
-| **Action Buttons** | ✅ Yes | ✅ iOS/Web | Tie |
+| **Custom Components** | ✅ Yes | ✅ Yes (`customView`) | Tie |
+| **Action Buttons** | ✅ Yes | ✅ All platforms | Tie |
 | **Queue Management** | ✅ Yes | ✅ Priority queue | ✅ Ours |
-| **Swipe to Dismiss** | ✅ Yes | ✅ iOS/Web | Tie |
+| **Swipe to Dismiss** | ✅ Yes | ✅ All platforms | Tie |
 | **Provider Required** | ✅ Yes | ❌ No | ✅ Ours |
 
 ## Platform-Specific Implementation Status
@@ -117,14 +117,13 @@
 - Custom colors and styling
 - Memory management optimized
 
-### Android ✅ 100% Complete (with limitations)
+### Android ✅ 100% Complete
 - Native Kotlin implementation
-- Uses Android Toast API (system limitations)
-- Basic features fully supported
-- Note: Android Toast API doesn't support:
-  - Custom colors (system controlled)
-  - Action buttons (not available in Toast)
-  - Swipe gestures (not available in Toast)
+- Falls back to the plain Android `Toast` API only for simple toasts with no
+  styling or actions requested
+- Custom colors, action buttons, and swipe-to-dismiss (`GestureDetector`) are
+  all supported through the custom view path (`CustomToastView.kt`,
+  `TurboToastView.kt`)
 
 ### Web ✅ 100% Complete
 - Full DOM-based implementation
@@ -147,10 +146,8 @@
 
 ## Features We Don't Have (By Design)
 
-1. **Custom React Components in Toasts** - We use native views for performance
-2. **Complex Animations** - We prioritize performance over fancy animations
-3. **Custom Layouts** - We provide standard toast layouts only
-4. **Multiple Visible Toasts** - We show one at a time (configurable)
+1. **Complex Animations** - We prioritize performance over fancy animations
+2. **Multiple Visible Toasts by Default** - One at a time unless `stackingEnabled` is set
 
 ## Summary
 
@@ -162,10 +159,13 @@ All planned features have been implemented:
 - ✅ Native platform implementations
 - ✅ Web support
 - ✅ TypeScript definitions
-- ✅ Action buttons (iOS/Web)
-- ✅ Swipe gestures (iOS/Web)
+- ✅ Action buttons (all platforms)
+- ✅ Swipe gestures (all platforms)
 - ✅ Retry logic
 - ✅ Memory management
 - ✅ Error handling
 
-The library is feature-complete and ready for production use.
+The JS-level feature set above is complete and unit-tested (105 tests). The
+native iOS/Android build is verified in CI on every push (`native.yml`)
+compiling a real host app — check that workflow's status before relying on it
+in production.

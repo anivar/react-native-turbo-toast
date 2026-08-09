@@ -21,7 +21,7 @@ Please be respectful and inclusive. We welcome contributors of all backgrounds a
 
 ```bash
 # Required versions
-node >= 22.0.0
+node >= 24.0.0
 bun >= 1.0.0 (recommended) or npm >= 10.0.0
 
 # Platform tools
@@ -109,7 +109,9 @@ bun test --watch   # 🔄 Watch mode
 **iOS (Objective-C++)**
 ```objc
 // ios/TurboToast.mm
-- (void)showToast:(NSDictionary *)options {
+RCT_EXPORT_METHOD(show:(NSDictionary *)options
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
     // Implementation
 }
 ```
@@ -117,15 +119,8 @@ bun test --watch   # 🔄 Watch mode
 **Android (Kotlin)**
 ```kotlin
 // android/src/main/java/com/turbo/toast/TurboToastModule.kt
-fun showToast(options: ReadableMap) {
-    // Implementation
-}
-```
-
-**Web (TypeScript)**
-```typescript
-// src/TurboToastView.web.tsx
-export function showToast(options: ToastOptions) {
+@ReactMethod
+override fun show(options: ReadableMap, promise: Promise) {
     // Implementation
 }
 ```
@@ -157,10 +152,11 @@ bun run ios
 
 # Android
 bun run android
-
-# Web
-bun run web
 ```
+
+Web runs through `src/web-renderer.ts` (a DOM renderer, not a TurboModule) via
+`Platform.OS === 'web'` in `manager.ts` — the example app has no `web` script
+to exercise it, so test that path in a react-native-web project directly.
 
 ### Test Structure
 
