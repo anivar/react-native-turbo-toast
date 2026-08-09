@@ -8,19 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.2]
 
 ### Fixed
-- The native iOS/Android build had never once compiled: codegen rejected `onPress`
-  nested inside `NativeToastAction` (function in an object type), the Android
-  module had a duplicate class and a missing import, `android/build.gradle`
-  applied a Gradle plugin removed since React Native 0.71, and the new-architecture
-  Kotlin spec directory did not exist.
-- A second codegen defect surfaced once the first was fixed: `duration` was typed
-  as a heterogeneous union (`'short' | 'long' | number`), which codegen also
-  rejects. `manager.ts` now resolves it to milliseconds before crossing the bridge.
-- `CustomToastView`'s action-button handler cast the activity to `ReactActivity`
-  and reached into `reactInstanceManager`, which is `protected` — it now takes
-  the `ReactContext` directly instead.
-- Added `.github/workflows/native.yml`, which compiles a real host app on every
-  push so this class of defect fails CI instead of shipping silently.
+- Codegen now accepts `NativeToastAction`: `onPress` moved off the spec (a
+  function inside an object type isn't representable there); the callback is
+  still resolved by toast id when native emits `TurboToast:ActionPressed`.
+- `duration` is now a plain number at the native boundary. `'short'`/`'long'`
+  are resolved to milliseconds in `manager.ts` before crossing the bridge,
+  which is also what codegen requires for a TurboModule spec field.
+- Android: fixed a missing import and a class-name collision in the custom
+  toast view, removed a Gradle plugin reference that predates React Native
+  0.71, and added the new-architecture Kotlin spec class.
+- `CustomToastView`'s action-button handler now takes the `ReactContext`
+  directly instead of deriving it from the activity, which relied on an
+  API that isn't accessible outside `ReactActivity` itself.
+- iOS: the multi-action array is now threaded through to the view builder
+  as its own parameter alongside the single-action one.
+- Added `.github/workflows/native.yml`, which compiles a real host app for
+  iOS and Android on every push.
 
 ### Documentation
 - Corrected `API.md`, `FEATURES.md`, and `FEATURE_COMPARISON.md`: removed the
