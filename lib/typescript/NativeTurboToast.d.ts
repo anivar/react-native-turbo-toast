@@ -1,7 +1,15 @@
 import type { TurboModule } from 'react-native';
+/**
+ * No `onPress` here. Codegen rejects a function inside an object type
+ * (`UnsupportedObjectPropertyValueTypeAnnotationParserError`), which failed
+ * `pod install` and Gradle codegen before a single line of Swift or Kotlin was
+ * compiled — so the whole native layer was unreachable.
+ *
+ * The callback never needed to cross the bridge: the manager keeps it keyed by
+ * toast id and runs it when native emits `TurboToast:ActionPressed`.
+ */
 export interface NativeToastAction {
     text: string;
-    onPress: () => void;
     style?: 'default' | 'cancel' | 'destructive';
 }
 export interface NativeToastOptions {

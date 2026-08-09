@@ -1,0 +1,156 @@
+name: Native
+
+# Compiles the Kotlin and the ObjC++. The existing CI runs typecheck, tests and
+# the bob build on Linux — all of which passed for every release while the
+# native layer did not build at all: codegen rejected the TurboModule spec, so
+# `pod install` and Gradle codegen failed before a line of Swift or Kotlin was
+# reached, and the Android module had a duplicate class, a missing import and a
+# source directory that did not exist.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  codegen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - run: npm install --no-audit --no-fund
+
+      # Cheap and decisive: this is the step that has been failing, and it needs
+      # no emulator, no SDK and no Xcode.
+      - name: Codegen accepts the spec
+        run: |
+          node node_modules/@react-native/codegen/lib/cli/combine/combine-js-to-schema-cli.js \
+            /tmp/schema.json src/
+          node -e "
+            const s = require('/tmp/schema.json');
+            const names = Object.keys(s.modules || {});
+            if (!names.includes('NativeTurboToast')) {
+              console.error('::error::NativeTurboToast is missing from the generated schema');
+              console.error('modules found:', names.join(', ') || '(none)');
+              process.exit(1);
+            }
+            console.log('modules:', names.join(', '));
+          "
+
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: lib
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Generate host app
+        run: |
+          npx --yes @react-native-community/cli@latest init HostApp \
+            --version 0.86.2 --skip-install --skip-git-init --install-pods false
+
+      # `npm install ../lib` runs the library's own prepare (bob build), which
+      # needs its devDependencies present.
+      - name: Build the library
+        working-directory: lib
+        run: npm install --no-audit --no-fund
+
+      - name: Link the library
+        working-directory: HostApp
+        run: |
+          npm install
+          npm install ../lib
+
+      # pipefail matters: without it the step's exit status is tee's, and a
+      # FAILED Kotlin compile reports success.
+      - name: Assemble
+        working-directory: HostApp/android
+        run: |
+          set -o pipefail
+          ./gradlew :app:assembleDebug --no-daemon --stacktrace | tee /tmp/gradle.log
+
+      - name: Assert this library was compiled, and compiled cleanly
+        if: always()
+        run: |
+          if ! grep -qE 'Task :react-native-turbo-toast:compile.*Kotlin' /tmp/gradle.log; then
+            echo "::error::The host app built without compiling this library — autolinking missed it, so this run verified nothing."
+            grep -oE '> Task :[^ ]+' /tmp/gradle.log | sort -u
+            exit 1
+          fi
+          if grep -qE 'Task :react-native-turbo-toast:[^ ]+ FAILED' /tmp/gradle.log; then
+            echo "::error::A task belonging to this library failed:"
+            grep -oE '> Task :react-native-turbo-toast:[^ ]+ FAILED' /tmp/gradle.log | sort -u
+            grep -E '^e: ' /tmp/gradle.log | head -40
+            exit 1
+          fi
+          grep -oE '> Task :react-native-turbo-toast:[^ ]+' /tmp/gradle.log | sort -u
+
+  ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: lib
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Generate host app
+        run: |
+          npx --yes @react-native-community/cli@latest init HostApp \
+            --version 0.86.2 --skip-install --skip-git-init --install-pods false
+
+      - name: Build the library
+        working-directory: lib
+        run: npm install --no-audit --no-fund
+
+      - name: Link the library
+        working-directory: HostApp
+        run: |
+          npm install
+          npm install ../lib
+
+      - name: Pod install
+        working-directory: HostApp/ios
+        run: RCT_NEW_ARCH_ENABLED=1 pod install
+
+      # Raw output, not xcpretty: xcpretty discards diagnostics it does not
+      # recognise, which defeats the purpose of this job.
+      - name: Build for simulator
+        working-directory: HostApp/ios
+        run: |
+          set -o pipefail
+          xcodebuild -workspace HostApp.xcworkspace -scheme HostApp \
+            -sdk iphonesimulator -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            build CODE_SIGNING_ALLOWED=NO 2>&1 | tee /tmp/xcodebuild.log || {
+              echo "::group::Compiler diagnostics"
+              grep -E '(error|warning):' /tmp/xcodebuild.log | sort -u || true
+              echo "::endgroup::"
+              exit 1
+            }
+
+      - name: Assert this library's sources were compiled
+        if: always()
+        run: |
+          if ! grep -qiE 'Compile(C|Swift).*[Tt]urbo[Tt]oast' /tmp/xcodebuild.log; then
+            echo "::error::No source file from this library was compiled — the pod was not built, so this run verified nothing."
+            exit 1
+          fi
+          grep -oiE 'Compile(C|Swift)[^ ]* [^ ]*[Tt]urbo[Tt]oast[^ ]*' /tmp/xcodebuild.log | sort -u | head

@@ -506,11 +506,12 @@ export class ToastManager {
       nativeOptions.icon = toast.icon.uri
     }
 
-    // Convert action
+    // Convert action. The onPress callback stays on this side: native reports
+    // the tap as TurboToast:ActionPressed and handleNativeAction runs it,
+    // keyed by toast id. A function cannot be part of a codegen object type.
     if (toast.action) {
       nativeOptions.action = {
         text: toast.action.text,
-        onPress: toast.action.onPress,
       }
     }
 

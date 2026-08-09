@@ -60,6 +60,7 @@
     "@biomejs/biome": "^2.2.4",
     "@react-native/babel-preset": "^0.85.2",
     "@react-native/codegen": "^0.85.2",
+    "@react-native/jest-preset": "^0.85.3",
     "@react-native/typescript-config": "^0.85.2",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.0.0",
