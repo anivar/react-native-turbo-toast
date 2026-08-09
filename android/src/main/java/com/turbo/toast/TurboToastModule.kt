@@ -57,7 +57,7 @@ class TurboToastModule(reactContext: ReactApplicationContext) :
         handler.post {
             try {
                 if (customToastView == null) {
-                    customToastView = CustomToastView(activity)
+                    customToastView = CustomToastView(activity, reactApplicationContext)
                 }
                 customToastView?.show(options, activity)
                 promise.resolve(null)
