@@ -18,7 +18,14 @@ export interface NativeToastAction {
 export interface NativeToastOptions {
   id?: string
   message: string
-  duration?: 'short' | 'long' | number
+  /**
+   * Milliseconds only — codegen rejects a union of string literals and a
+   * number (HeterogeneousUnionError), so 'short'/'long' are resolved to ms
+   * by manager.ts's calculateDuration before crossing the bridge. Native
+   * still treats >2500ms as its "long" duration, matching the old string
+   * path's 2000ms/3500ms defaults exactly.
+   */
+  duration?: number
   position?: 'top' | 'center' | 'bottom'
   type?: 'success' | 'error' | 'warning' | 'info' | 'default'
   backgroundColor?: string

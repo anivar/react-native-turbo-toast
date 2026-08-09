@@ -486,7 +486,7 @@ export class ToastManager {
     const nativeOptions: NativeToastOptions = {
       id: toast.id, // Pass ID for action handling
       message: toast.message,
-      duration: toast.duration,
+      duration: calculateDuration(toast.duration),
       position: toast.position,
       type: toast.type,
       backgroundColor: toast.backgroundColor,
