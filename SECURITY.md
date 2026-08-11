@@ -6,7 +6,8 @@ We actively support the following versions of react-native-turbo-toast:
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.1.x   | :white_check_mark: |
+| 1.x     | :white_check_mark: |
+| < 1.0   | :x:                |
 
 ## Reporting Security Vulnerabilities
 
@@ -16,7 +17,7 @@ We take security vulnerabilities seriously and appreciate your help in keeping o
 
 **Please DO NOT report security vulnerabilities through public GitHub issues.**
 
-Instead, please email us directly at: `security@openslm.ai`
+Instead, please email us directly at: `ping@anivar.net`
 
 Include the following information:
 - Type of issue (buffer overflow, SQL injection, cross-site scripting, etc.)

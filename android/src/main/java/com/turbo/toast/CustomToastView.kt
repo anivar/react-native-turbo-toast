@@ -19,11 +19,13 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Button
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableType
 import com.facebook.react.modules.core.DeviceEventManagerModule
 
-class CustomToastView(private val context: Context) {
+class CustomToastView(private val context: Context, private val reactContext: ReactContext? = null) {
     private var currentView: View? = null
     private val handler = Handler(Looper.getMainLooper())
     private var dismissRunnable: Runnable? = null
@@ -258,8 +260,7 @@ class CustomToastView(private val context: Context) {
                 setOnClickListener {
                     // Send event to React Native
                     try {
-                        val reactContext = activity as? com.facebook.react.ReactActivity
-                        reactContext?.reactInstanceManager?.currentReactContext
+                        reactContext
                             ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
                             ?.emit("TurboToast:ActionPressed",
                                 com.facebook.react.bridge.Arguments.createMap().apply {

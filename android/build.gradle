@@ -39,9 +39,14 @@ android {
         disable "GradleCompatible"
     }
 
+    // 17, not 11: React Native 0.80+ and AGP 8 both require a JDK 17 toolchain.
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
     }
 
     sourceSets {
@@ -70,12 +75,12 @@ def isNewArchitectureEnabled() {
     return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
 }
 
-if (isNewArchitectureEnabled()) {
-    apply plugin: "com.facebook.react.codegen"
-
-    react {
-        libraryName = "TurboToast"
-        codegenJavaPackageName = "com.turbo.toast"
-        jsRootDir = file("../")
-    }
+// No `com.facebook.react.codegen` plugin: it was folded into
+// `com.facebook.react` (applied above) in React Native 0.71 and no longer
+// resolves, so this block failed the build outright under the new
+// architecture — the only mode React Native 0.80+ has.
+react {
+    libraryName = "TurboToast"
+    codegenJavaPackageName = "com.turbo.toast"
+    jsRootDir = file("../src/")
 }

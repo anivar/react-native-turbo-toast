@@ -332,15 +332,14 @@ Toast.configure({
 | 🎨 Custom Styling | ✅ | ✅ | ✅ | Full support |
 | 🧩 Custom Components | ✅ | ✅ | ✅ | Full support |
 | 🔘 Multi-Actions | ✅ | ✅ | ✅ | Full support |
-| 👆 Swipe to Dismiss | ✅ | ⚠️ | ✅ | Android: Tap only* |
+| 👆 Swipe to Dismiss | ✅ | ✅ | ✅ | Full support |
 | 📳 Haptic Feedback | ✅ | ✅ | ✅ | Full support |
 | 📊 Progress Bars | ✅ | ✅ | ✅ | Full support |
 | 🎯 Queue Management | ✅ | ✅ | ✅ | Full support |
 | ✨ Animations | ✅ | ✅ | ✅ | Full support |
-| 💾 Persistence | ✅ | ✅ | ⚠️ | Web: localStorage** |
+| 💾 Persistence | ✅ | ✅ | ⚠️ | Web: localStorage* |
 
-<sub>* Android uses WindowManager which doesn't support swipe gestures</sub><br/>
-<sub>** Web requires localStorage adapter (not included)</sub>
+<sub>* Web requires localStorage adapter (not included)</sub>
 
 ## 🧪 TypeScript
 

@@ -17,46 +17,46 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.events.RCTEventEmitter
 
-class TurboToastViewManager : SimpleViewManager<TurboToastView>() {
+class TurboToastViewManager : SimpleViewManager<TurboToastComponentView>() {
 
     override fun getName() = "TurboToastView"
 
-    override fun createViewInstance(reactContext: ThemedReactContext): TurboToastView {
-        return TurboToastView(reactContext)
+    override fun createViewInstance(reactContext: ThemedReactContext): TurboToastComponentView {
+        return TurboToastComponentView(reactContext)
     }
 
     @ReactProp(name = "message")
-    fun setMessage(view: TurboToastView, message: String?) {
+    fun setMessage(view: TurboToastComponentView, message: String?) {
         view.setMessage(message ?: "")
     }
 
     @ReactProp(name = "duration")
-    fun setDuration(view: TurboToastView, duration: Double) {
+    fun setDuration(view: TurboToastComponentView, duration: Double) {
         view.setDuration(duration)
     }
 
     @ReactProp(name = "position")
-    fun setPosition(view: TurboToastView, position: String?) {
+    fun setPosition(view: TurboToastComponentView, position: String?) {
         view.setPosition(position ?: "bottom")
     }
 
     @ReactProp(name = "type")
-    fun setType(view: TurboToastView, type: String?) {
+    fun setType(view: TurboToastComponentView, type: String?) {
         view.setType(type ?: "default")
     }
 
     @ReactProp(name = "backgroundColor")
-    fun setBackgroundColor(view: TurboToastView, backgroundColor: String?) {
+    fun setBackgroundColor(view: TurboToastComponentView, backgroundColor: String?) {
         view.setBackgroundColorProp(backgroundColor)
     }
 
     @ReactProp(name = "textColor")
-    fun setTextColor(view: TurboToastView, textColor: String?) {
+    fun setTextColor(view: TurboToastComponentView, textColor: String?) {
         view.setTextColorProp(textColor)
     }
 
     @ReactProp(name = "visible")
-    fun setVisible(view: TurboToastView, visible: Boolean) {
+    fun setVisible(view: TurboToastComponentView, visible: Boolean) {
         view.setVisible(visible)
     }
 
@@ -69,7 +69,12 @@ class TurboToastViewManager : SimpleViewManager<TurboToastView>() {
     }
 }
 
-class TurboToastView(private val reactContext: ThemedReactContext) : LinearLayout(reactContext) {
+// Renamed from TurboToastView: a different class of that name already exists
+// in this package (TurboToastView.kt, the imperative ReadableMap-driven view),
+// and two declarations of one name in one package is a Kotlin redeclaration
+// error. The registered component name is still "TurboToastView" — that comes
+// from getName(), not from the Kotlin class name.
+class TurboToastComponentView(private val reactContext: ThemedReactContext) : LinearLayout(reactContext) {
 
     private var textView: TextView = TextView(context)
     private var message: String = ""

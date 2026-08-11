@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2]
+
+### Fixed
+- Codegen now accepts `NativeToastAction`: `onPress` moved off the spec (a
+  function inside an object type isn't representable there); the callback is
+  still resolved by toast id when native emits `TurboToast:ActionPressed`.
+- `duration` is now a plain number at the native boundary. `'short'`/`'long'`
+  are resolved to milliseconds in `manager.ts` before crossing the bridge,
+  which is also what codegen requires for a TurboModule spec field.
+- Android: fixed a missing import and a class-name collision in the custom
+  toast view, removed a Gradle plugin reference that predates React Native
+  0.71, and added the new-architecture Kotlin spec class.
+- `CustomToastView`'s action-button handler now takes the `ReactContext`
+  directly instead of deriving it from the activity, which relied on an
+  API that isn't accessible outside `ReactActivity` itself.
+- iOS: the multi-action array is now threaded through to the view builder
+  as its own parameter alongside the single-action one.
+- Added `.github/workflows/native.yml`, which compiles a real host app for
+  iOS and Android on every push.
+
+### Documentation
+- Corrected `API.md`, `FEATURES.md`, and `FEATURE_COMPARISON.md`: removed the
+  unexported `useToast()`/`useGroupToasts()`/`useQueueEvents()` hooks, fixed the
+  `QueueStats`/`QueueEvent`/`ToastAction` shapes to match `src/types.ts`, and
+  corrected Android's swipe-to-dismiss and custom-view/action-button support
+  (all real, previously documented as absent or iOS/web-only).
+- `CONTRIBUTING.md`: fixed the Node version requirement (`>=24.0.0`) and the
+  native method examples (`show`, not `showToast`).
+- `SECURITY.md`: replaced the stale `security@openslm.ai` contact and version
+  table.
+
 ## [1.1.1]
 
 ### Changed

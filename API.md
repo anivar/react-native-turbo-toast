@@ -250,10 +250,9 @@ Get comprehensive queue statistics.
 ```tsx
 const stats = Toast.getQueueStats()
 console.log(`
+  📦 Total: ${stats.total}
   📊 Active: ${stats.active}
   ⏳ Pending: ${stats.pending}
-  ✅ Shown: ${stats.shown}
-  ❌ Failed: ${stats.failed}
   🎯 By Priority: ${JSON.stringify(stats.byPriority)}
   📱 By Group: ${JSON.stringify(stats.byGroup)}
 `)
@@ -262,13 +261,13 @@ console.log(`
 **Returns:**
 ```typescript
 interface QueueStats {
-  active: number         // Currently visible
-  pending: number        // Waiting in queue
-  shown: number         // Total shown
-  dismissed: number     // Total dismissed
-  failed: number        // Total failed
+  total: number           // active + pending
+  active: number          // Currently visible
+  pending: number         // Waiting in queue
   byPriority: Record<number, number>  // Count by priority
   byGroup: Record<string, number>     // Count by group
+  oldestTimestamp?: number
+  newestTimestamp?: number
 }
 ```
 
@@ -383,25 +382,9 @@ for (let i = 0; i <= 100; i += 10) {
 
 ## 🪝 React Hooks
 
-Hooks for React component integration.
-
-### `useToast()`
-
-Simple toast hook for components.
-
-```tsx
-function MyComponent() {
-  const toast = useToast()
-
-  return (
-    <Button onPress={() => toast.show('Hello!')}>
-      Show Toast
-    </Button>
-  )
-}
-```
-
----
+Hooks for React component integration. `Toast.show`/`Toast.hide`/etc. work
+outside components too — these two hooks exist for subscribing a component to
+queue state.
 
 ### `useToastQueue(options?)`
 
@@ -439,49 +422,6 @@ function StatsDisplay() {
   const stats = useToastStats(100)
 
   return <Text>📊 {stats.active} active</Text>
-}
-```
-
----
-
-### `useGroupToasts(group, refreshInterval?)`
-
-Monitor a specific toast group.
-
-```tsx
-function NotificationCenter() {
-  const notifications = useGroupToasts('notifications', 100)
-
-  return (
-    <View>
-      <Text>📬 {notifications.length} notifications</Text>
-      {notifications.map(toast => (
-        <Text key={toast.id}>{toast.message}</Text>
-      ))}
-    </View>
-  )
-}
-```
-
----
-
-### `useQueueEvents(maxEvents?)`
-
-Monitor queue events.
-
-```tsx
-function EventMonitor() {
-  const events = useQueueEvents(10)  // Last 10 events
-
-  return (
-    <View>
-      {events.map((event, i) => (
-        <Text key={i}>
-          {event.timestamp}: {event.eventType}
-        </Text>
-      ))}
-    </View>
-  )
 }
 ```
 
@@ -650,7 +590,7 @@ type ActionStyle = 'default' | 'destructive' | 'cancel'
 interface ToastAction {
   text: string
   style?: ActionStyle
-  onPress?: () => void | Promise<void>
+  onPress: () => void
 }
 
 interface QueuedToast extends ToastOptions {
@@ -662,10 +602,10 @@ interface QueuedToast extends ToastOptions {
 }
 
 interface QueueEvent {
-  eventType: 'added' | 'removed' | 'updated' | 'cleared' | 'paused' | 'resumed'
-  toastId?: string
+  type: 'added' | 'removed' | 'updated' | 'cleared'
+  toast?: QueuedToast
+  stats: QueueStats
   timestamp: number
-  details?: any
 }
 ```
 
@@ -677,7 +617,7 @@ interface QueueEvent {
 - ✅ UIView-based custom views
 
 ### Android
-- ⚠️ Tap-to-dismiss only (WindowManager limitation)
+- ✅ Swipe-to-dismiss support (`GestureDetector`)
 - ✅ Haptic via Vibration API
 - ✅ Custom WindowManager overlays
 
@@ -792,6 +732,6 @@ Toast.configure({ persistenceEnabled: true })
 ---
 
 <div align="center">
-  <sub>📚 Complete API documentation for react-native-turbo-toast v1.0.0</sub><br/>
+  <sub>📚 API documentation for react-native-turbo-toast</sub><br/>
   <sub>🐛 Found an issue? <a href="https://github.com/anivar/react-native-turbo-toast/issues">Report it</a></sub>
 </div>
