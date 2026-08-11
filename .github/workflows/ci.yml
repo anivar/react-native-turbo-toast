@@ -34,15 +34,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-<<<<<<< HEAD
-      - uses: actions/checkout@v6
-      - uses: actions/dependency-review-action@v5
-||||||| c1ebde6
-      - uses: actions/checkout@v6
-      - uses: actions/dependency-review-action@v5
-=======
       - uses: actions/checkout@v7
       - uses: actions/dependency-review-action@v5
->>>>>>> origin/main
         with:
           fail-on-severity: high
